@@ -1,77 +1,185 @@
-/*Given a single linked list that consists of ‘R’ and ‘B’ values only, 
-write an efficient function to find the maximum sequence length of 
-any color. What are the time and space complexities of your solution?
-Function prototype:
-     int  findMaxSeq(Node head)
-Input:    R B R B B R R R R B B B R
-Output:  4
- * */
-package com.assignments.linkedlists;
+public class LinkedList <T>{
 
-public class MaxSeqeuence {
+	private ListNode<T> header;
+	private int size;
+	//private ListNode<T> last;
 
-	public static void main(String[] args) {
-		Node a = new Node('R');
-		Node b = new Node('B');
-		Node c = new Node('R');
-		Node d = new Node('B');
-		Node e = new Node('B');
-		Node f = new Node('R');
-		Node g = new Node('R');
-		Node h = new Node('R');
-		Node i = new Node('R');
-		Node j = new Node('B');
-		Node k = new Node('B');
-		Node l = new Node('B');
-		Node m = new Node('R');
 
-		a.next = b;
-		b.next = c;
-		c.next = d;
-		d.next = e;
-		e.next = f;
-		f.next = g;
-		g.next = h;
-		h.next = i;
-		i.next = j;
-		j.next = k;
-		k.next = l;
-		l.next = m;
-
-		Node head = new Node("head");
-		head.next = a;
-		System.out.println("lenght of max sequence is: " + findMaxSeq(head));
-
-	}
-
-	static int findMaxSeq(Node head) {
-		int maxCount = 1;
-		Node previous = head;
-		int count = 1;
-
-		for (Node current = head.next; current != null; current = current.next) {
-			if (previous.data == current.data) {
-				count++;
-			} else if (maxCount < count) {
-				maxCount = count;
-				count = 1;
-
-			}
-			previous = current;
+	// displays list
+	public void displayList(){
+		if(header==null){
+			System.out.println("Empty list");
+			return ;
 		}
-		if (maxCount < count)
-			maxCount = count;
-		return maxCount;
+		ListNode<T> current=header.next;
 
+		System.out.println("size of list is : "+getSize(header) +" Elements");
+		while(current!=null){
+			System.out.print(current.elem+" ");
+			current=current.next;
+		}
+		System.out.println( );
 	}
-}
-
-class Node {
-	Object data;
-	Node next;
-
-	Node(Object data) {
-		this.data = data;
-		this.next = null;
+	
+	//return size of the list
+	public  int getSize(ListNode<T> header){
+		int length=0;
+		header=header.next;
+		while(header!=null){
+			++length;
+			header=header.next;
+		}
+		return length;
 	}
+
+
+	
+	//add at last of the list	
+	public boolean add(T elem){
+		if(header==null){
+			header=new ListNode<T>();
+			header.next=null;
+			size=0;
+
+		}
+
+		ListNode<T> temp= new ListNode<T>(elem);
+		ListNode<T> current=header;
+
+		//traverse till end of the list
+		while(current.next!=null){
+			current=current.next;
+		}
+
+		//add new node to list and return true
+		current.next=temp;
+		++size;
+		return true;
+	}	
+	// returns ture or false if searched for an element
+		public boolean contains(T elem){
+		if(header==null){
+			return false;
+		}
+		ListNode<T> current=header.next;
+
+		while (current!=null){
+			if(current.elem.equals(elem))
+				return true;
+			current=current.next;
+		}
+
+		return false;
+	}
+	
+	//find middle elemnt of the list
+	public ListNode<T> findMiddle(){
+
+		if(header==null){
+			return null ;
+		}
+
+		ListNode<T> slow,fast;
+		slow=header.next;
+		fast=slow;
+
+		while(fast!=null && fast.next!=null){
+			fast=fast.next.next;
+			slow=slow.next;
+		}
+		return slow;
+	}
+	
+	//find First common node of a list
+	public  ListNode<T> findFirstCommon(ListNode<T> header1,ListNode<T> header2){
+
+		int n=getSize(header1);
+		int m=getSize(header2);
+
+		header1=header1.next;
+		header2=header2.next;
+		int lenDiff=Math.abs(m-n);
+		ListNode<T> h1,h2;
+		if(n>=m){
+			h1=header1;
+			h2=header2;
+		}
+		else{
+			h1=header2;
+			h2=header1;
+		}
+		// header of the longer list to a element to make both list of equal size now
+		for(int i=0;i<lenDiff;i++){
+			h1=h1.next;
+		}
+		while(h1!=h2){
+			h1=h1.next;
+			h2=h2.next;
+		}
+		return h1; 
+	}
+
+
+	//splitList
+	public void splitList(){
+		
+		ListNode<T> fast,slow;
+		fast=header;
+		slow=header;
+		
+		while(fast.next!=null&& fast!=null){
+			if(fast.next.next==null){
+				slow=slow.next;
+			}
+			fast=fast.next.next;
+			slow=slow.next;
+		}
+		fast.next=header.next;
+		header.next=slow.next;
+		slow.next=null;
+	}
+	
+	///assignment find max continous node of either R or B;
+	public  int findMaxNode(){
+		int maxR=0;
+		int maxB=0;
+		int max=0;
+		String elm;
+		if(header==null)
+			return max;
+
+		ListNode<T> current=header.next;
+		elm=String.valueOf(current.elem);
+
+		while(current!=null){
+			if(!current.elem.equals(elm)){
+				
+				if(max<maxB||max<maxR){
+					if(maxB>maxR)
+						max=maxB;
+					else
+						max=maxR;
+				}
+				if(current.elem.equals("R")){
+					maxR=1;
+					maxB=0;
+					elm="R";
+				}
+				else{
+					maxR=0;
+					maxB=1;
+					elm="B";
+				}
+			}
+			else{
+				if(current.elem.equals("B"))
+					maxB++;				
+				else
+					maxR++;
+			}
+			current=current.next;
+		}
+		return max;
+	}
+
 }
